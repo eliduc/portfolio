@@ -550,8 +550,11 @@
         }
 
         function getProjectImage(projectName, projectDescription) {
-            // First, try to use PNG from the portfolio repository
+            // Use PNG from the portfolio repository
             var githubImageUrl = 'https://raw.githubusercontent.com/eliduc/portfolio/main/' + projectName + '.png';
+            
+            // Log for debugging
+            console.log('Loading image for ' + projectName + ' from:', githubImageUrl);
             
             // Fallback stock images map
             var stockImageMap = {
@@ -566,6 +569,7 @@
                 
                 // File transfer
                 'rptransfer': 'https://images.unsplash.com/photo-1544197150-b99a580bb7a8?w=400&h=300&fit=crop',
+                'rpc': 'https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=400&h=300&fit=crop', // Trading/finance
                 
                 // Default fallbacks by keywords
                 'default_ai': 'https://images.unsplash.com/photo-1677442136019-21780ecad995?w=400&h=300&fit=crop',
@@ -576,10 +580,12 @@
                 'default_tech': 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=400&h=300&fit=crop'
             };
             
-            // Store both URLs
+            var fallbackImage = getStockImage(projectName, projectDescription, stockImageMap);
+            
+            // Return both URLs
             return {
                 primary: githubImageUrl,
-                fallback: getStockImage(projectName, projectDescription, stockImageMap)
+                fallback: fallbackImage
             };
         }
         
@@ -683,11 +689,11 @@
                 
                 htmlContent += '<div class="group relative bg-white/10 backdrop-blur-lg rounded-2xl overflow-hidden border border-white/20 hover:border-white/40 transition-all duration-300 hover:transform hover:scale-105 cursor-pointer" onclick="showProjectDetail(' + project.id + ')">';
                 
-                // Add project image
+                // Add project image with lighter gradient
                 var projectImages = getProjectImage(project.name, project.description);
-                htmlContent += '<div class="relative h-48 overflow-hidden">';
-                htmlContent += '<img src="' + projectImages.primary + '" alt="' + project.name + '" class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110" onerror="this.onerror=null; this.src=\'' + projectImages.fallback + '\';">';
-                htmlContent += '<div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>';
+                htmlContent += '<div class="relative h-48 overflow-hidden bg-gradient-to-br from-purple-600/20 to-pink-600/20">';
+                htmlContent += '<img src="' + projectImages.primary + '" alt="' + project.name + '" class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110" loading="lazy" crossorigin="anonymous" onerror="console.error(\'Failed to load: \' + this.src); this.onerror=null; this.src=\'' + projectImages.fallback + '\';">';
+                htmlContent += '<div class="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent pointer-events-none"></div>';
                 htmlContent += '</div>';
                 
                 htmlContent += '<div class="p-6">';
@@ -805,10 +811,10 @@
             
             var htmlContent = '';
             
-            // Add hero image
+            // Add hero image with lighter gradient
             htmlContent += '<div class="relative h-64 -m-8 mb-8 overflow-hidden rounded-t-3xl">';
-            htmlContent += '<img src="' + projectImages.primary + '" alt="' + selectedProject.name + '" class="w-full h-full object-cover" onerror="this.onerror=null; this.src=\'' + projectImages.fallback + '\';">';
-            htmlContent += '<div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent"></div>';
+            htmlContent += '<img src="' + projectImages.primary + '" alt="' + selectedProject.name + '" class="w-full h-full object-cover" loading="lazy" crossorigin="anonymous" onerror="console.error(\'Failed to load detail image: \' + this.src); this.onerror=null; this.src=\'' + projectImages.fallback + '\';">';
+            htmlContent += '<div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"></div>';
             htmlContent += '<div class="absolute bottom-0 left-0 right-0 p-8">';
             htmlContent += '<h1 class="text-4xl font-bold text-white mb-2">' + selectedProject.name + '</h1>';
             htmlContent += '<div class="inline-block px-4 py-2 rounded-full text-sm font-semibold bg-gradient-to-r ' + techColor + ' text-white">' + (selectedProject.language || 'Unknown') + '</div>';
