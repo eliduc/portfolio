@@ -12,15 +12,6 @@
             -webkit-line-clamp: 3;
             -webkit-box-orient: vertical;
             overflow: hidden;
-        function getTechColor(tech) {
-            if (tech === 'JavaScript') return 'from-yellow-400 to-yellow-600';
-            if (tech === 'Python') return 'from-blue-400 to-blue-600';
-            if (tech === 'React') return 'from-cyan-400 to-cyan-600';
-            if (tech === 'TypeScript') return 'from-blue-500 to-blue-700';
-            if (tech === 'Java') return 'from-red-400 to-red-600';
-            if (tech === 'HTML') return 'from-orange-400 to-red-500';
-            if (tech === 'CSS') return 'from-blue-400 to-purple-500';
-            return 'from-gray-400 to-gray-600';
         }
         
         .backdrop-blur-lg {
@@ -612,54 +603,6 @@
             
             // Default technology image
             return stockImageMap['default_tech'];
-        }
-
-        function getProjectImage(projectName, projectDescription) {
-            // Map project types to relevant Unsplash image searches
-            var imageMap = {
-                // AI/ML projects
-                'codingapi': 'https://images.unsplash.com/photo-1555949963-aa79dcee981c?w=400&h=300&fit=crop', // AI code
-                'dco-dp-mcts': 'https://images.unsplash.com/photo-1509228468518-180dd4864904?w=400&h=300&fit=crop', // Algorithm visualization
-                'mcts-demo': 'https://images.unsplash.com/photo-1559028012-481c04fa702d?w=400&h=300&fit=crop', // Data optimization
-                
-                // IoT/Security projects
-                'gateproject': 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=300&fit=crop', // Smart security
-                'gatecheck': 'https://images.unsplash.com/photo-1558002038-1055907df827?w=400&h=300&fit=crop', // IoT monitoring
-                
-                // File transfer
-                'rptransfer': 'https://images.unsplash.com/photo-1544197150-b99a580bb7a8?w=400&h=300&fit=crop', // Network transfer
-                
-                // Default fallbacks by keywords
-                'default_ai': 'https://images.unsplash.com/photo-1677442136019-21780ecad995?w=400&h=300&fit=crop',
-                'default_iot': 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=400&h=300&fit=crop',
-                'default_security': 'https://images.unsplash.com/photo-1563986768609-322da13575f3?w=400&h=300&fit=crop',
-                'default_code': 'https://images.unsplash.com/photo-1542831371-29b0f74f9713?w=400&h=300&fit=crop',
-                'default_data': 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&h=300&fit=crop',
-                'default_tech': 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=400&h=300&fit=crop'
-            };
-            
-            // Check specific project mapping first
-            var projectKey = projectName.toLowerCase().replace(/[-_]/g, '');
-            if (imageMap[projectKey]) {
-                return imageMap[projectKey];
-            }
-            
-            // Determine image based on description keywords
-            var desc = (projectDescription || '').toLowerCase();
-            if (desc.includes('ai') || desc.includes('llm') || desc.includes('claude') || desc.includes('openai')) {
-                return imageMap['default_ai'];
-            } else if (desc.includes('iot') || desc.includes('raspberry') || desc.includes('sensor')) {
-                return imageMap['default_iot'];
-            } else if (desc.includes('security') || desc.includes('gate') || desc.includes('facial')) {
-                return imageMap['default_security'];
-            } else if (desc.includes('algorithm') || desc.includes('optimization') || desc.includes('data')) {
-                return imageMap['default_data'];
-            } else if (desc.includes('code') || desc.includes('api') || desc.includes('transfer')) {
-                return imageMap['default_code'];
-            }
-            
-            // Default technology image
-            return imageMap['default_tech'];
         }
 
         function renderProjects() {
