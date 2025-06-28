@@ -682,6 +682,8 @@
                 var techColor = getTechColor(project.language);
                 var updateDate = new Date(project.updated_at).toLocaleDateString();
                 
+                console.log('Rendering project:', project.name); // Debug line
+                
                 var homepageLink = '';
                 if (project.homepage) {
                     homepageLink = '<a href="' + project.homepage + '" target="_blank" rel="noopener noreferrer" class="p-2 rounded-lg bg-white/10 hover:bg-white/20 transition-colors duration-200" onclick="event.stopPropagation()"><span class="text-white text-sm">🔗</span></a>';
@@ -689,12 +691,21 @@
                 
                 htmlContent += '<div class="group relative bg-white/10 backdrop-blur-lg rounded-2xl overflow-hidden border border-white/20 hover:border-white/40 transition-all duration-300 hover:transform hover:scale-105 cursor-pointer" onclick="showProjectDetail(' + project.id + ')">';
                 
-                // Add project image with lighter gradient
-                var projectImages = getProjectImage(project.name, project.description);
-                htmlContent += '<div class="relative h-48 overflow-hidden bg-gradient-to-br from-purple-600/20 to-pink-600/20">';
-                htmlContent += '<img src="' + projectImages.primary + '" alt="' + project.name + '" class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110" loading="lazy" crossorigin="anonymous" onerror="console.error(\'Failed to load: \' + this.src); this.onerror=null; this.src=\'' + projectImages.fallback + '\';">';
-                htmlContent += '<div class="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent pointer-events-none"></div>';
-                htmlContent += '</div>';
+                // Add project image with debugging
+                try {
+                    var projectImages = getProjectImage(project.name, project.description);
+                    console.log('Project images for', project.name, ':', projectImages); // Debug line
+                    htmlContent += '<div class="relative h-48 overflow-hidden bg-gradient-to-br from-purple-600/20 to-pink-600/20">';
+                    htmlContent += '<img src="' + projectImages.primary + '" alt="' + project.name + '" class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110" loading="lazy" crossorigin="anonymous" onerror="console.error(\'Failed to load: \' + this.src); this.onerror=null; this.src=\'' + projectImages.fallback + '\';">';
+                    htmlContent += '<div class="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent pointer-events-none"></div>';
+                    htmlContent += '</div>';
+                } catch (error) {
+                    console.error('Error getting images for', project.name, ':', error);
+                    // Fallback if there's an error
+                    htmlContent += '<div class="relative h-48 overflow-hidden bg-gradient-to-br from-purple-600/40 to-pink-600/40 flex items-center justify-center">';
+                    htmlContent += '<span class="text-6xl opacity-50">💻</span>';
+                    htmlContent += '</div>';
+                }
                 
                 htmlContent += '<div class="p-6">';
                 htmlContent += '<div class="absolute inset-0 bg-gradient-to-br from-purple-500/20 to-pink-500/20 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>';
