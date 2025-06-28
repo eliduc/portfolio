@@ -1,0 +1,949 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lev's Repositories</title>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .line-clamp-3 {
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        function getTechColor(tech) {
+            if (tech === 'JavaScript') return 'from-yellow-400 to-yellow-600';
+            if (tech === 'Python') return 'from-blue-400 to-blue-600';
+            if (tech === 'React') return 'from-cyan-400 to-cyan-600';
+            if (tech === 'TypeScript') return 'from-blue-500 to-blue-700';
+            if (tech === 'Java') return 'from-red-400 to-red-600';
+            if (tech === 'HTML') return 'from-orange-400 to-red-500';
+            if (tech === 'CSS') return 'from-blue-400 to-purple-500';
+            return 'from-gray-400 to-gray-600';
+        }
+        
+        .backdrop-blur-lg {
+            backdrop-filter: blur(16px);
+        }
+        
+        .animate-spin {
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        .hover\:scale-105:hover {
+            transform: scale(1.05);
+        }
+        
+        .transition-all {
+            transition: all 0.3s ease;
+        }
+        
+        .transition-colors {
+            transition: color 0.2s ease, background-color 0.2s ease, border-color 0.2s ease;
+        }
+        
+        .transition-opacity {
+            transition: opacity 0.3s ease;
+        }
+        
+        .duration-200 {
+            transition-duration: 200ms;
+        }
+        
+        .duration-300 {
+            transition-duration: 300ms;
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
+    <!-- Navigation -->
+    <nav class="sticky top-0 z-50 bg-black/20 backdrop-blur-lg border-b border-white/10">
+        <div class="max-w-7xl mx-auto px-6 py-4">
+            <div class="flex items-center justify-between">
+                <button onclick="showView('home')" class="text-2xl font-bold text-white hover:text-transparent hover:bg-gradient-to-r hover:from-purple-400 hover:to-pink-400 hover:bg-clip-text transition-all duration-300">
+                    Lev's Repositories
+                </button>
+                <div class="flex space-x-6">
+                    <button onclick="showView('home')" id="nav-projects" class="px-4 py-2 rounded-lg transition-all duration-200 bg-purple-500 text-white">
+                        Projects
+                    </button>
+                    <button onclick="showView('contact')" id="nav-contact" class="px-4 py-2 rounded-lg transition-all duration-200 text-white/80 hover:text-white">
+                        Contact
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="max-w-7xl mx-auto px-6 py-12">
+        <!-- Loading Screen -->
+        <div id="loading-screen" class="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center">
+            <div class="text-center">
+                <div class="w-16 h-16 border-4 border-purple-500 border-t-transparent rounded-full animate-spin mb-4"></div>
+                <p class="text-white text-lg">Loading your amazing projects...</p>
+            </div>
+        </div>
+
+        <!-- Home View -->
+        <div id="home-view" class="hidden">
+            <!-- Hero Section -->
+            <div class="text-center mb-16">
+                <h1 class="text-6xl font-bold text-white mb-6">
+                    <span class="text-transparent bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text">
+                        Lev's Repositories
+                    </span>
+                </h1>
+                <p class="text-xl text-white/80 mb-8 max-w-2xl mx-auto">
+                    AI & IoT Developer specializing in intelligent automation, algorithmic optimization, and smart system solutions
+                </p>
+                <div class="flex items-center justify-center space-x-4">
+                    <span class="px-4 py-2 bg-gradient-to-r from-cyan-500 to-blue-500 text-white rounded-full text-sm font-semibold">
+                        <span id="project-count">Loading...</span>
+                    </span>
+                    <span class="px-4 py-2 bg-gradient-to-r from-green-500 to-emerald-500 text-white rounded-full text-sm font-semibold">
+                        <span id="tech-count">Loading...</span>
+                    </span>
+                    <button onclick="fetchGitHubRepositories()" class="px-4 py-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-full text-sm font-semibold hover:from-purple-600 hover:to-pink-600 transition-all duration-200">
+                        🔄 Refresh
+                    </button>
+                    <span id="api-status" class="px-3 py-1 bg-white/10 text-white/70 rounded-full text-xs">
+                        🔄 Loading...
+                    </span>
+                </div>
+            </div>
+
+            <!-- Search and Filter -->
+            <div class="mb-12">
+                <div class="flex flex-col md:flex-row gap-4 items-center justify-between">
+                    <div class="relative flex-1 max-w-md">
+                        <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-white/50 text-sm">🔍</span>
+                        <input
+                            type="text"
+                            placeholder="Search projects..."
+                            id="search-input"
+                            class="w-full pl-10 pr-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-white/50 focus:outline-none focus:border-purple-500 transition-colors duration-200"
+                            oninput="handleSearch(this.value)"
+                        />
+                    </div>
+                    
+                    <div class="flex flex-wrap gap-2" id="filter-buttons">
+                        <!-- Filter buttons will be populated by JavaScript -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Projects Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" id="projects-grid">
+                <!-- Projects will be populated by JavaScript -->
+            </div>
+
+            <!-- No projects found -->
+            <div id="no-projects" class="text-center py-16 hidden">
+                <div class="text-white/30 mx-auto mb-4 text-6xl">💻</div>
+                <h3 class="text-2xl font-bold text-white mb-2">No projects found</h3>
+                <p class="text-white/60">Try adjusting your search or filter criteria</p>
+            </div>
+        </div>
+
+        <!-- Project Detail View -->
+        <div id="project-view" class="hidden">
+            <div class="max-w-4xl mx-auto">
+                <button onclick="showView('home')" class="flex items-center space-x-2 text-white/80 hover:text-white mb-8 transition-colors duration-200">
+                    <span class="text-lg">←</span>
+                    <span>Back to Projects</span>
+                </button>
+                
+                <div id="project-detail-content" class="bg-white/10 backdrop-blur-lg rounded-3xl p-8 border border-white/20">
+                    <!-- Project details will be populated by JavaScript -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Contact View -->
+        <div id="contact-view" class="hidden">
+            <div class="max-w-2xl mx-auto">
+                <div class="text-center mb-12">
+                    <h2 class="text-4xl font-bold text-white mb-4">Get In Touch</h2>
+                    <p class="text-white/80 text-lg">Let's discuss your next project or collaboration</p>
+                </div>
+                
+                <div class="bg-white/10 backdrop-blur-lg rounded-3xl p-8 border border-white/20">
+                    <div class="space-y-6">
+                        <div>
+                            <label class="block text-white font-semibold mb-2">Name</label>
+                            <input
+                                type="text"
+                                id="contact-name"
+                                class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/50 focus:outline-none focus:border-purple-500 transition-colors duration-200"
+                                placeholder="Your name"
+                            />
+                        </div>
+                        <div>
+                            <label class="block text-white font-semibold mb-2">Email</label>
+                            <input
+                                type="email"
+                                id="contact-email"
+                                class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/50 focus:outline-none focus:border-purple-500 transition-colors duration-200"
+                                placeholder="your.email@example.com"
+                            />
+                        </div>
+                        <div>
+                            <label class="block text-white font-semibold mb-2">Message</label>
+                            <textarea
+                                rows="5"
+                                id="contact-message"
+                                class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/50 focus:outline-none focus:border-purple-500 transition-colors duration-200"
+                                placeholder="Tell me about your project..."
+                            ></textarea>
+                        </div>
+                        <button
+                            onclick="handleContactSubmit()"
+                            class="w-full px-6 py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-semibold rounded-lg hover:from-purple-600 hover:to-pink-600 transition-all duration-200 transform hover:scale-105"
+                        >
+                            Send Message
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="border-t border-white/10 bg-black/20">
+        <div class="max-w-7xl mx-auto px-6 py-8">
+            <div class="flex flex-col md:flex-row items-center justify-between gap-4">
+                <p class="text-white/60 text-center md:text-left">© 2025 Lev. Built with HTML, CSS & JavaScript • <span id="last-updated">Loading...</span></p>
+                <div class="flex items-center space-x-4">
+                    <div class="text-white/50 text-xs text-center">
+                        💡 <span class="hidden md:inline">Deploy to a web server for live GitHub data</span>
+                        <span class="md:hidden">Deploy for live data</span>
+                    </div>
+                    <a
+                        href="https://github.com/eliduc"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="text-white/60 hover:text-white transition-colors duration-200 text-xl"
+                        title="View GitHub Profile"
+                    >
+                        💾
+                    </a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Global variables
+        var projects = [];
+        var filteredProjects = [];
+        var technologies = [];
+        var currentView = 'home';
+        var activeFilter = 'all';
+        var searchTerm = '';
+        var selectedProject = null;
+
+        function fetchGitHubRepositories() {
+            // Show loading state
+            var projectCountEl = document.getElementById('project-count');
+            var techCountEl = document.getElementById('tech-count');
+            var lastUpdatedEl = document.getElementById('last-updated');
+            var apiStatusEl = document.getElementById('api-status');
+            
+            if (projectCountEl) projectCountEl.textContent = 'Loading...';
+            if (techCountEl) techCountEl.textContent = 'Loading...';
+            if (lastUpdatedEl) lastUpdatedEl.textContent = 'Fetching live data...';
+            if (apiStatusEl) {
+                apiStatusEl.textContent = '🔄 Loading...';
+                apiStatusEl.className = 'px-3 py-1 bg-blue-500/20 text-blue-200 rounded-full text-xs';
+            }
+            
+            // Try multiple approaches in sequence
+            tryDirectAPI()
+                .catch(function(error) {
+                    console.log('⚠️ Direct API failed:', error.message);
+                    return tryCorsPoxy1();
+                })
+                .catch(function(error) {
+                    console.log('⚠️ CORS Proxy 1 failed:', error.message);
+                    return tryCorsProxy2();
+                })
+                .catch(function(error) {
+                    console.log('⚠️ CORS Proxy 2 failed:', error.message);
+                    return tryJSONP();
+                })
+                .catch(function(error) {
+                    console.log('❌ All API methods failed, using fallback data:', error.message);
+                    return getFallbackData();
+                })
+                .then(function(repos) {
+                    processGitHubData(repos, !repos.fromAPI);
+                });
+        }
+        
+        function tryDirectAPI() {
+            return fetch('https://api.github.com/users/eliduc/repos?sort=updated&per_page=100')
+                .then(function(response) {
+                    if (!response.ok) throw new Error('HTTP ' + response.status);
+                    return response.json();
+                })
+                .then(function(repos) {
+                    console.log('✅ Successfully fetched from GitHub API');
+                    repos.fromAPI = true;
+                    return repos;
+                });
+        }
+        
+        function tryCorsPoxy1() {
+            return fetch('https://api.allorigins.win/get?url=' + encodeURIComponent('https://api.github.com/users/eliduc/repos?sort=updated&per_page=100'))
+                .then(function(response) {
+                    if (!response.ok) throw new Error('HTTP ' + response.status);
+                    return response.json();
+                })
+                .then(function(data) {
+                    console.log('✅ Successfully fetched via AllOrigins proxy');
+                    var repos = JSON.parse(data.contents);
+                    repos.fromAPI = true;
+                    return repos;
+                });
+        }
+        
+        function tryCorsProxy2() {
+            return fetch('https://corsproxy.io/?https://api.github.com/users/eliduc/repos?sort=updated&per_page=100')
+                .then(function(response) {
+                    if (!response.ok) throw new Error('HTTP ' + response.status);
+                    return response.json();
+                })
+                .then(function(repos) {
+                    console.log('✅ Successfully fetched via CorsProxy.io');
+                    repos.fromAPI = true;
+                    return repos;
+                });
+        }
+        
+        function tryJSONP() {
+            return new Promise(function(resolve, reject) {
+                // Create a JSONP request
+                var script = document.createElement('script');
+                var callbackName = 'githubCallback_' + Date.now();
+                
+                window[callbackName] = function(data) {
+                    console.log('✅ Successfully fetched via JSONP');
+                    data.fromAPI = true;
+                    resolve(data);
+                    document.head.removeChild(script);
+                    delete window[callbackName];
+                };
+                
+                script.onerror = function() {
+                    reject(new Error('JSONP failed'));
+                    document.head.removeChild(script);
+                    delete window[callbackName];
+                };
+                
+                script.src = 'https://api.github.com/users/eliduc/repos?sort=updated&per_page=100&callback=' + callbackName;
+                document.head.appendChild(script);
+                
+                // Timeout after 10 seconds
+                setTimeout(function() {
+                    if (window[callbackName]) {
+                        reject(new Error('JSONP timeout'));
+                        document.head.removeChild(script);
+                        delete window[callbackName];
+                    }
+                }, 10000);
+            });
+        }
+        
+        function getFallbackData() {
+            return new Promise(function(resolve) {
+                var fallbackProjects = [
+                    {
+                        id: 1,
+                        name: 'CodingAPI',
+                        description: 'AI-powered code generation, auditing, and correction tool with multi-LLM support (OpenAI, Claude, Gemini, DeepSeek) and intuitive GUI for iterative code refinement',
+                        language: 'Python',
+                        stargazers_count: 0,
+                        forks_count: 0,
+                        html_url: 'https://github.com/eliduc/CodingAPI',
+                        homepage: '',
+                        updated_at: '2025-06-15T10:00:00Z',
+                        topics: ['ai', 'code-generation', 'llm', 'python', 'gui', 'openai', 'claude', 'gemini'],
+                        fork: false
+                    },
+                    {
+                        id: 2,
+                        name: 'GateProject',
+                        description: 'Smart security gate system with facial recognition, Telegram remote control, and automated alarm management for Raspberry Pi',
+                        language: 'Python',
+                        stargazers_count: 0,
+                        forks_count: 0,
+                        html_url: 'https://github.com/eliduc/GateProject',
+                        homepage: '',
+                        updated_at: '2025-06-10T14:30:00Z',
+                        topics: ['iot', 'raspberry-pi', 'facial-recognition', 'telegram', 'security', 'automation'],
+                        fork: false
+                    },
+                    {
+                        id: 3,
+                        name: 'GateCheck',
+                        description: 'Automated IoT gate monitoring system with Tuya sensors, Shelly control, Telegram notifications, and battery alerts',
+                        language: 'Python',
+                        stargazers_count: 0,
+                        forks_count: 0,
+                        html_url: 'https://github.com/eliduc/GateCheck',
+                        homepage: '',
+                        updated_at: '2025-06-05T09:15:00Z',
+                        topics: ['iot', 'tuya', 'shelly', 'telegram', 'monitoring', 'sensors'],
+                        fork: false
+                    },
+                    {
+                        id: 4,
+                        name: 'MCTS-Demo',
+                        description: 'MCTS for apartment price optimization demo',
+                        language: 'HTML',
+                        stargazers_count: 0,
+                        forks_count: 0,
+                        html_url: 'https://github.com/eliduc/MCTS-Demo',
+                        homepage: '',
+                        updated_at: '2025-05-20T16:45:00Z',
+                        topics: ['mcts', 'optimization', 'algorithms', 'demo'],
+                        fork: false
+                    },
+                    {
+                        id: 5,
+                        name: 'DCO-DP-MCTS',
+                        description: 'Advanced Monte Carlo Tree Search implementation for Dynamic Combinatorial Optimization with Dynamic Programming',
+                        language: 'Python',
+                        stargazers_count: 0,
+                        forks_count: 0,
+                        html_url: 'https://github.com/eliduc/DCO-DP-MCTS',
+                        homepage: '',
+                        updated_at: '2025-05-15T11:20:00Z',
+                        topics: ['mcts', 'algorithms', 'optimization', 'dynamic-programming'],
+                        fork: false
+                    },
+                    {
+                        id: 6,
+                        name: 'RPTransfer',
+                        description: 'A feature-rich SFTP file transfer client with a dual-pane GUI, for managing files on remote systems like Raspberry Pi and PCs',
+                        language: 'Python',
+                        stargazers_count: 0,
+                        forks_count: 0,
+                        html_url: 'https://github.com/eliduc/RPTransfer',
+                        homepage: '',
+                        updated_at: '2025-05-01T08:30:00Z',
+                        topics: ['sftp', 'file-transfer', 'gui', 'raspberry-pi', 'python'],
+                        fork: false
+                    }
+                ];
+                console.log('📦 Using fallback project data');
+                fallbackProjects.fromAPI = false;
+                resolve(fallbackProjects);
+            });
+        }
+
+        function processGitHubData(repos, isFallback) {
+            console.log('Processing ' + repos.length + ' repositories from GitHub');
+            
+            // Filter out forks and the portfolio repository itself
+            var filteredRepos = [];
+            for (var i = 0; i < repos.length; i++) {
+                if (!repos[i].fork && repos[i].name.toLowerCase() !== 'portfolio') {
+                    filteredRepos.push(repos[i]);
+                }
+            }
+            
+            // Sort by most recently updated
+            filteredRepos.sort(function(a, b) {
+                return new Date(b.updated_at) - new Date(a.updated_at);
+            });
+            
+            console.log('Showing ' + filteredRepos.length + ' non-fork repositories');
+            
+            // Extract unique technologies
+            var techs = [];
+            for (var i = 0; i < filteredRepos.length; i++) {
+                if (filteredRepos[i].language && techs.indexOf(filteredRepos[i].language) === -1) {
+                    techs.push(filteredRepos[i].language);
+                }
+            }
+            
+            projects = filteredRepos;
+            filteredProjects = filteredRepos;
+            technologies = techs;
+            
+            // Update the project count in the hero section
+            var projectCountEl = document.getElementById('project-count');
+            if (projectCountEl) {
+                projectCountEl.textContent = filteredRepos.length + ' Projects';
+            }
+            var techCountEl = document.getElementById('tech-count');
+            if (techCountEl) {
+                techCountEl.textContent = techs.length + ' Technologies';
+            }
+            
+            // Update status indicators
+            var apiStatusEl = document.getElementById('api-status');
+            var lastUpdatedEl = document.getElementById('last-updated');
+            
+            if (isFallback) {
+                if (apiStatusEl) {
+                    apiStatusEl.textContent = '📦 Cached Data';
+                    apiStatusEl.className = 'px-3 py-1 bg-orange-500/20 text-orange-200 rounded-full text-xs';
+                }
+                if (lastUpdatedEl) {
+                    lastUpdatedEl.textContent = 'Using cached data (GitHub API unavailable)';
+                }
+            } else {
+                var lastUpdated = new Date().toLocaleString();
+                if (apiStatusEl) {
+                    apiStatusEl.textContent = '✅ Live Data';
+                    apiStatusEl.className = 'px-3 py-1 bg-green-500/20 text-green-200 rounded-full text-xs';
+                }
+                if (lastUpdatedEl) {
+                    lastUpdatedEl.textContent = 'Live data updated: ' + lastUpdated;
+                }
+                console.log('📅 Live data updated: ' + lastUpdated);
+            }
+            
+            renderProjects();
+            renderFilterButtons();
+            hideLoading();
+            safeCreateIcons();
+        }
+
+        function safeCreateIcons() {
+            try {
+                if (typeof lucide !== 'undefined' && lucide.createIcons) {
+                    lucide.createIcons();
+                }
+            } catch (error) {
+                console.log('Icons not available, using fallbacks');
+            }
+        }
+
+        function init() {
+            // Fetch real GitHub data
+            fetchGitHubRepositories();
+        }
+
+        function hideLoading() {
+            document.getElementById('loading-screen').classList.add('hidden');
+            document.getElementById('home-view').classList.remove('hidden');
+        }
+
+        function getTechColor(tech) {
+            if (tech === 'JavaScript') return 'from-yellow-400 to-yellow-600';
+            if (tech === 'Python') return 'from-blue-400 to-blue-600';
+            if (tech === 'React') return 'from-cyan-400 to-cyan-600';
+            if (tech === 'TypeScript') return 'from-blue-500 to-blue-700';
+            if (tech === 'Java') return 'from-red-400 to-red-600';
+            if (tech === 'HTML') return 'from-orange-400 to-red-500';
+            if (tech === 'CSS') return 'from-blue-400 to-purple-500';
+            return 'from-gray-400 to-gray-600';
+        }
+
+        function getProjectImage(projectName, projectDescription) {
+            // Map project types to relevant Unsplash image searches
+            var imageMap = {
+                // AI/ML projects
+                'codingapi': 'https://images.unsplash.com/photo-1555949963-aa79dcee981c?w=400&h=300&fit=crop', // AI code
+                'dcodpmcts': 'https://images.unsplash.com/photo-1509228468518-180dd4864904?w=400&h=300&fit=crop', // Algorithm visualization
+                'mctsdemo': 'https://images.unsplash.com/photo-1559028012-481c04fa702d?w=400&h=300&fit=crop', // Data optimization
+                
+                // IoT/Security projects
+                'gateproject': 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=300&fit=crop', // Smart security
+                'gatecheck': 'https://images.unsplash.com/photo-1558002038-1055907df827?w=400&h=300&fit=crop', // IoT monitoring
+                
+                // File transfer
+                'rptransfer': 'https://images.unsplash.com/photo-1544197150-b99a580bb7a8?w=400&h=300&fit=crop', // Network transfer
+                
+                // Default fallbacks by keywords
+                'default_ai': 'https://images.unsplash.com/photo-1677442136019-21780ecad995?w=400&h=300&fit=crop',
+                'default_iot': 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=400&h=300&fit=crop',
+                'default_security': 'https://images.unsplash.com/photo-1563986768609-322da13575f3?w=400&h=300&fit=crop',
+                'default_code': 'https://images.unsplash.com/photo-1542831371-29b0f74f9713?w=400&h=300&fit=crop',
+                'default_data': 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&h=300&fit=crop',
+                'default_tech': 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=400&h=300&fit=crop'
+            };
+            
+            // Check specific project mapping first
+            var projectKey = projectName.toLowerCase().replace(/[-_]/g, '');
+            if (imageMap[projectKey]) {
+                return imageMap[projectKey];
+            }
+            
+            // Determine image based on description keywords
+            var desc = (projectDescription || '').toLowerCase();
+            if (desc.includes('ai') || desc.includes('llm') || desc.includes('claude') || desc.includes('openai')) {
+                return imageMap['default_ai'];
+            } else if (desc.includes('iot') || desc.includes('raspberry') || desc.includes('sensor')) {
+                return imageMap['default_iot'];
+            } else if (desc.includes('security') || desc.includes('gate') || desc.includes('facial')) {
+                return imageMap['default_security'];
+            } else if (desc.includes('algorithm') || desc.includes('optimization') || desc.includes('data')) {
+                return imageMap['default_data'];
+            } else if (desc.includes('code') || desc.includes('api') || desc.includes('transfer')) {
+                return imageMap['default_code'];
+            }
+            
+            // Default technology image
+            return imageMap['default_tech'];
+        }
+
+        function getProjectImage(projectName, projectDescription) {
+            // Map project types to relevant Unsplash image searches
+            var imageMap = {
+                // AI/ML projects
+                'codingapi': 'https://images.unsplash.com/photo-1555949963-aa79dcee981c?w=400&h=300&fit=crop', // AI code
+                'dco-dp-mcts': 'https://images.unsplash.com/photo-1509228468518-180dd4864904?w=400&h=300&fit=crop', // Algorithm visualization
+                'mcts-demo': 'https://images.unsplash.com/photo-1559028012-481c04fa702d?w=400&h=300&fit=crop', // Data optimization
+                
+                // IoT/Security projects
+                'gateproject': 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=300&fit=crop', // Smart security
+                'gatecheck': 'https://images.unsplash.com/photo-1558002038-1055907df827?w=400&h=300&fit=crop', // IoT monitoring
+                
+                // File transfer
+                'rptransfer': 'https://images.unsplash.com/photo-1544197150-b99a580bb7a8?w=400&h=300&fit=crop', // Network transfer
+                
+                // Default fallbacks by keywords
+                'default_ai': 'https://images.unsplash.com/photo-1677442136019-21780ecad995?w=400&h=300&fit=crop',
+                'default_iot': 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=400&h=300&fit=crop',
+                'default_security': 'https://images.unsplash.com/photo-1563986768609-322da13575f3?w=400&h=300&fit=crop',
+                'default_code': 'https://images.unsplash.com/photo-1542831371-29b0f74f9713?w=400&h=300&fit=crop',
+                'default_data': 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&h=300&fit=crop',
+                'default_tech': 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=400&h=300&fit=crop'
+            };
+            
+            // Check specific project mapping first
+            var projectKey = projectName.toLowerCase().replace(/[-_]/g, '');
+            if (imageMap[projectKey]) {
+                return imageMap[projectKey];
+            }
+            
+            // Determine image based on description keywords
+            var desc = (projectDescription || '').toLowerCase();
+            if (desc.includes('ai') || desc.includes('llm') || desc.includes('claude') || desc.includes('openai')) {
+                return imageMap['default_ai'];
+            } else if (desc.includes('iot') || desc.includes('raspberry') || desc.includes('sensor')) {
+                return imageMap['default_iot'];
+            } else if (desc.includes('security') || desc.includes('gate') || desc.includes('facial')) {
+                return imageMap['default_security'];
+            } else if (desc.includes('algorithm') || desc.includes('optimization') || desc.includes('data')) {
+                return imageMap['default_data'];
+            } else if (desc.includes('code') || desc.includes('api') || desc.includes('transfer')) {
+                return imageMap['default_code'];
+            }
+            
+            // Default technology image
+            return imageMap['default_tech'];
+        }
+
+        function renderProjects() {
+            var grid = document.getElementById('projects-grid');
+            var noProjects = document.getElementById('no-projects');
+            
+            if (filteredProjects.length === 0) {
+                grid.classList.add('hidden');
+                noProjects.classList.remove('hidden');
+                return;
+            }
+            
+            grid.classList.remove('hidden');
+            noProjects.classList.add('hidden');
+            
+            var htmlContent = '';
+            
+            for (var i = 0; i < filteredProjects.length; i++) {
+                var project = filteredProjects[i];
+                var techColor = getTechColor(project.language);
+                var updateDate = new Date(project.updated_at).toLocaleDateString();
+                
+                var homepageLink = '';
+                if (project.homepage) {
+                    homepageLink = '<a href="' + project.homepage + '" target="_blank" rel="noopener noreferrer" class="p-2 rounded-lg bg-white/10 hover:bg-white/20 transition-colors duration-200" onclick="event.stopPropagation()"><span class="text-white text-sm">🔗</span></a>';
+                }
+                
+                htmlContent += '<div class="group relative bg-white/10 backdrop-blur-lg rounded-2xl overflow-hidden border border-white/20 hover:border-white/40 transition-all duration-300 hover:transform hover:scale-105 cursor-pointer" onclick="showProjectDetail(' + project.id + ')">';
+                
+                // Add project image
+                var projectImage = getProjectImage(project.name, project.description);
+                htmlContent += '<div class="relative h-48 overflow-hidden">';
+                htmlContent += '<img src="' + projectImage + '" alt="' + project.name + '" class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110" onerror="this.style.display=\'none\'; this.nextElementSibling.style.display=\'flex\';">';
+                htmlContent += '<div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>';
+                // Fallback if image fails
+                htmlContent += '<div class="absolute inset-0 bg-gradient-to-br from-purple-600/20 to-pink-600/20 items-center justify-center hidden"><span class="text-6xl opacity-50">💻</span></div>';
+                htmlContent += '</div>';
+                
+                htmlContent += '<div class="p-6">';
+                htmlContent += '<div class="absolute inset-0 bg-gradient-to-br from-purple-500/20 to-pink-500/20 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>';
+                htmlContent += '<div class="relative z-10">';
+                htmlContent += '<div class="flex items-start justify-between mb-4">';
+                htmlContent += '<div class="px-3 py-1 rounded-full text-xs font-semibold bg-gradient-to-r ' + techColor + ' text-white">' + (project.language || 'Unknown') + '</div>';
+                htmlContent += '<div class="flex items-center space-x-2 text-white/60">';
+                htmlContent += '<span class="text-sm">⭐</span><span>' + project.stargazers_count + '</span>';
+                htmlContent += '<span class="text-sm">🍴</span><span>' + project.forks_count + '</span>';
+                htmlContent += '</div></div>';
+                htmlContent += '<h3 class="text-xl font-bold text-white mb-2 group-hover:text-transparent group-hover:bg-gradient-to-r group-hover:from-purple-400 group-hover:to-pink-400 group-hover:bg-clip-text transition-all duration-300">' + project.name + '</h3>';
+                htmlContent += '<p class="text-white/80 text-sm mb-4 line-clamp-3">' + (project.description || 'No description available') + '</p>';
+                htmlContent += '<div class="flex items-center justify-between">';
+                htmlContent += '<span class="text-white/60 text-xs">Updated ' + updateDate + '</span>';
+                htmlContent += '<div class="flex space-x-2">';
+                htmlContent += '<a href="' + project.html_url + '" target="_blank" rel="noopener noreferrer" class="p-2 rounded-lg bg-white/10 hover:bg-white/20 transition-colors duration-200" onclick="event.stopPropagation()"><span class="text-white text-sm">💾</span></a>';
+                htmlContent += homepageLink;
+                htmlContent += '</div></div></div></div></div>';
+            }
+            
+            grid.innerHTML = htmlContent;
+            safeCreateIcons();
+        }
+
+        function renderFilterButtons() {
+            var container = document.getElementById('filter-buttons');
+            var htmlContent = '';
+            
+            var allActive = activeFilter === 'all';
+            var allClass = allActive ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white' : 'bg-white/10 text-white/80 hover:bg-white/20';
+            htmlContent += '<button onclick="filterProjects(\'all\')" class="px-4 py-2 rounded-lg transition-all duration-200 ' + allClass + '">All</button>';
+            
+            for (var i = 0; i < technologies.length; i++) {
+                var tech = technologies[i];
+                var isActive = activeFilter === tech;
+                var buttonClass;
+                
+                if (isActive) {
+                    var techColor = getTechColor(tech);
+                    buttonClass = 'bg-gradient-to-r ' + techColor + ' text-white';
+                } else {
+                    buttonClass = 'bg-white/10 text-white/80 hover:bg-white/20';
+                }
+                
+                htmlContent += '<button onclick="filterProjects(\'' + tech + '\')" class="px-4 py-2 rounded-lg transition-all duration-200 ' + buttonClass + '">' + tech + '</button>';
+            }
+            
+            container.innerHTML = htmlContent;
+        }
+
+        function filterProjects(tech) {
+            activeFilter = tech;
+            applyFilters();
+            renderFilterButtons();
+        }
+
+        function handleSearch(term) {
+            searchTerm = term;
+            applyFilters();
+        }
+
+        function applyFilters() {
+            var filtered = [];
+            
+            for (var i = 0; i < projects.length; i++) {
+                var project = projects[i];
+                var matchesFilter = activeFilter === 'all' || project.language === activeFilter;
+                var matchesSearch = !searchTerm || 
+                    project.name.toLowerCase().indexOf(searchTerm.toLowerCase()) !== -1 ||
+                    (project.description && project.description.toLowerCase().indexOf(searchTerm.toLowerCase()) !== -1);
+                
+                if (matchesFilter && matchesSearch) {
+                    filtered.push(project);
+                }
+            }
+            
+            filteredProjects = filtered;
+            renderProjects();
+        }
+
+        function showProjectDetail(projectId) {
+            for (var i = 0; i < projects.length; i++) {
+                if (projects[i].id === projectId) {
+                    selectedProject = projects[i];
+                    break;
+                }
+            }
+            
+            if (selectedProject) {
+                renderProjectDetail();
+                showView('project');
+            }
+        }
+
+        function renderProjectDetail() {
+            var container = document.getElementById('project-detail-content');
+            var techColor = getTechColor(selectedProject.language);
+            var updateDate = new Date(selectedProject.updated_at).toLocaleDateString();
+            var projectImage = getProjectImage(selectedProject.name, selectedProject.description);
+            
+            var homepageButton = '';
+            if (selectedProject.homepage) {
+                homepageButton = '<a href="' + selectedProject.homepage + '" target="_blank" rel="noopener noreferrer" class="flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-cyan-500 to-blue-500 text-white rounded-lg hover:from-cyan-600 hover:to-blue-600 transition-all duration-200"><span>🔗</span><span>Live Demo</span></a>';
+            }
+            
+            var topicsSection = '';
+            if (selectedProject.topics && selectedProject.topics.length > 0) {
+                topicsSection = '<div class="mt-6"><h3 class="text-xl font-bold text-white mb-3">Topics</h3><div class="flex flex-wrap gap-2">';
+                for (var i = 0; i < selectedProject.topics.length; i++) {
+                    topicsSection += '<span class="px-3 py-1 bg-gradient-to-r from-indigo-500 to-purple-500 text-white text-sm rounded-full">' + selectedProject.topics[i] + '</span>';
+                }
+                topicsSection += '</div></div>';
+            }
+            
+            var htmlContent = '';
+            
+            // Add hero image
+            htmlContent += '<div class="relative h-64 -m-8 mb-8 overflow-hidden rounded-t-3xl">';
+            htmlContent += '<img src="' + projectImage + '" alt="' + selectedProject.name + '" class="w-full h-full object-cover">';
+            htmlContent += '<div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent"></div>';
+            htmlContent += '<div class="absolute bottom-0 left-0 right-0 p-8">';
+            htmlContent += '<h1 class="text-4xl font-bold text-white mb-2">' + selectedProject.name + '</h1>';
+            htmlContent += '<div class="inline-block px-4 py-2 rounded-full text-sm font-semibold bg-gradient-to-r ' + techColor + ' text-white">' + (selectedProject.language || 'Unknown') + '</div>';
+            htmlContent += '</div></div>';
+            
+            htmlContent += '<div class="flex items-start justify-between mb-6">';
+            htmlContent += '<div class="flex-1">';
+            htmlContent += '<p class="text-white/80 text-lg mb-4">' + (selectedProject.description || 'No description available for this project.') + '</p>';
+            htmlContent += '</div>';
+            htmlContent += '<div class="flex space-x-4 ml-8">';
+            htmlContent += '<a href="' + selectedProject.html_url + '" target="_blank" rel="noopener noreferrer" class="flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-lg hover:from-purple-600 hover:to-pink-600 transition-all duration-200"><span>💾</span><span>View Code</span></a>';
+            htmlContent += homepageButton;
+            htmlContent += '</div></div>';
+            
+            htmlContent += '<div class="grid md:grid-cols-3 gap-8 mb-8">';
+            htmlContent += '<div class="bg-white/5 rounded-xl p-4"><div class="flex items-center space-x-2 mb-2"><span class="text-yellow-400 text-xl">⭐</span><span class="text-white font-semibold">Stars</span></div><p class="text-2xl font-bold text-white">' + selectedProject.stargazers_count + '</p></div>';
+            htmlContent += '<div class="bg-white/5 rounded-xl p-4"><div class="flex items-center space-x-2 mb-2"><span class="text-cyan-400 text-xl">🍴</span><span class="text-white font-semibold">Forks</span></div><p class="text-2xl font-bold text-white">' + selectedProject.forks_count + '</p></div>';
+            htmlContent += '<div class="bg-white/5 rounded-xl p-4"><div class="flex items-center space-x-2 mb-2"><span class="text-purple-400 text-xl">📅</span><span class="text-white font-semibold">Updated</span></div><p class="text-sm text-white">' + updateDate + '</p></div>';
+            htmlContent += '</div>';
+            
+            htmlContent += topicsSection;
+            
+            container.innerHTML = htmlContent;
+            safeCreateIcons();
+        }
+
+        function showView(view) {
+            document.getElementById('home-view').classList.add('hidden');
+            document.getElementById('project-view').classList.add('hidden');
+            document.getElementById('contact-view').classList.add('hidden');
+            
+            document.getElementById('nav-projects').classList.remove('bg-purple-500', 'text-white');
+            document.getElementById('nav-projects').classList.add('text-white/80', 'hover:text-white');
+            document.getElementById('nav-contact').classList.remove('bg-purple-500', 'text-white');
+            document.getElementById('nav-contact').classList.add('text-white/80', 'hover:text-white');
+            
+            if (view === 'home') {
+                document.getElementById('home-view').classList.remove('hidden');
+                document.getElementById('nav-projects').classList.add('bg-purple-500', 'text-white');
+                document.getElementById('nav-projects').classList.remove('text-white/80', 'hover:text-white');
+            } else if (view === 'project') {
+                document.getElementById('project-view').classList.remove('hidden');
+            } else if (view === 'contact') {
+                document.getElementById('contact-view').classList.remove('hidden');
+                document.getElementById('nav-contact').classList.add('bg-purple-500', 'text-white');
+                document.getElementById('nav-contact').classList.remove('text-white/80', 'hover:text-white');
+            }
+            
+            currentView = view;
+        }
+
+        function handleContactSubmit() {
+            var name = document.getElementById('contact-name').value.trim();
+            var email = document.getElementById('contact-email').value.trim();
+            var message = document.getElementById('contact-message').value.trim();
+            
+            // Validate inputs
+            if (!name || !email || !message) {
+                showNotification('Please fill in all fields before sending your message.', 'error');
+                return;
+            }
+            
+            // Validate email format
+            var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                showNotification('Please enter a valid email address.', 'error');
+                return;
+            }
+            
+            // Encode the message properly for mailto
+            var subject = encodeURIComponent('Portfolio Contact from ' + name);
+            var body = encodeURIComponent(
+                'Name: ' + name + '\n' +
+                'Email: ' + email + '\n' +
+                'Message:\n' + message + '\n\n' +
+                '---\n' +
+                'Sent from Lev\'s Portfolio Website'
+            );
+            
+            // Create and trigger the mailto link
+            var mailtoLink = 'mailto:levrlg@gmail.com?subject=' + subject + '&body=' + body;
+            
+            // For better UX, show a message first
+            showNotification('Opening your email client...', 'success');
+            
+            // Small delay to show the notification
+            setTimeout(function() {
+                window.location.href = mailtoLink;
+                
+                // Clear the form after sending
+                document.getElementById('contact-name').value = '';
+                document.getElementById('contact-email').value = '';
+                document.getElementById('contact-message').value = '';
+                
+                // Show final message
+                setTimeout(function() {
+                    showNotification('Email client opened! Please send the email from your mail app.', 'info');
+                }, 500);
+            }, 300);
+        }
+
+        // Add this notification function for better user feedback
+        function showNotification(message, type) {
+            // Remove any existing notification
+            var existingNotification = document.getElementById('notification');
+            if (existingNotification) {
+                existingNotification.remove();
+            }
+            
+            // Create notification element
+            var notification = document.createElement('div');
+            notification.id = 'notification';
+            notification.className = 'fixed top-4 right-4 z-50 px-6 py-3 rounded-lg text-white font-medium transition-all duration-300 transform translate-x-full';
+            
+            // Set color based on type
+            if (type === 'success') {
+                notification.className += ' bg-green-500';
+            } else if (type === 'error') {
+                notification.className += ' bg-red-500';
+            } else {
+                notification.className += ' bg-blue-500';
+            }
+            
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            // Animate in
+            setTimeout(function() {
+                notification.classList.remove('translate-x-full');
+            }, 10);
+            
+            // Remove after 3 seconds
+            setTimeout(function() {
+                notification.classList.add('translate-x-full');
+                setTimeout(function() {
+                    notification.remove();
+                }, 300);
+            }, 3000);
+        }
+
+        // Initialize the app when page loads
+        window.onload = function() {
+            init();
+        };
+    </script>
+</body>
+</html>
