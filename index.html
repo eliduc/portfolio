@@ -12,6 +12,15 @@
             -webkit-line-clamp: 3;
             -webkit-box-orient: vertical;
             overflow: hidden;
+        function getTechColor(tech) {
+            if (tech === 'JavaScript') return 'from-yellow-400 to-yellow-600';
+            if (tech === 'Python') return 'from-blue-400 to-blue-600';
+            if (tech === 'React') return 'from-cyan-400 to-cyan-600';
+            if (tech === 'TypeScript') return 'from-blue-500 to-blue-700';
+            if (tech === 'Java') return 'from-red-400 to-red-600';
+            if (tech === 'HTML') return 'from-orange-400 to-red-500';
+            if (tech === 'CSS') return 'from-blue-400 to-purple-500';
+            return 'from-gray-400 to-gray-600';
         }
         
         .backdrop-blur-lg {
@@ -442,10 +451,10 @@
         function processGitHubData(repos, isFallback) {
             console.log('Processing ' + repos.length + ' repositories from GitHub');
             
-            // Filter out forks and sort by update date
+            // Filter out forks and the portfolio repository itself
             var filteredRepos = [];
             for (var i = 0; i < repos.length; i++) {
-                if (!repos[i].fork) {
+                if (!repos[i].fork && repos[i].name.toLowerCase() !== 'portfolio') {
                     filteredRepos.push(repos[i]);
                 }
             }
@@ -540,6 +549,113 @@
             return 'from-gray-400 to-gray-600';
         }
 
+        function getProjectImage(projectName, projectDescription) {
+            // First, try to use PNG from the portfolio repository
+            var githubImageUrl = 'https://raw.githubusercontent.com/eliduc/portfolio/main/' + projectName + '.png';
+            
+            // Fallback stock images map
+            var stockImageMap = {
+                // AI/ML projects
+                'codingapi': 'https://images.unsplash.com/photo-1555949963-aa79dcee981c?w=400&h=300&fit=crop',
+                'dcodpmcts': 'https://images.unsplash.com/photo-1509228468518-180dd4864904?w=400&h=300&fit=crop',
+                'mctsdemo': 'https://images.unsplash.com/photo-1559028012-481c04fa702d?w=400&h=300&fit=crop',
+                
+                // IoT/Security projects
+                'gateproject': 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=300&fit=crop',
+                'gatecheck': 'https://images.unsplash.com/photo-1558002038-1055907df827?w=400&h=300&fit=crop',
+                
+                // File transfer
+                'rptransfer': 'https://images.unsplash.com/photo-1544197150-b99a580bb7a8?w=400&h=300&fit=crop',
+                
+                // Default fallbacks by keywords
+                'default_ai': 'https://images.unsplash.com/photo-1677442136019-21780ecad995?w=400&h=300&fit=crop',
+                'default_iot': 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=400&h=300&fit=crop',
+                'default_security': 'https://images.unsplash.com/photo-1563986768609-322da13575f3?w=400&h=300&fit=crop',
+                'default_code': 'https://images.unsplash.com/photo-1542831371-29b0f74f9713?w=400&h=300&fit=crop',
+                'default_data': 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&h=300&fit=crop',
+                'default_tech': 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=400&h=300&fit=crop'
+            };
+            
+            // Store both URLs
+            return {
+                primary: githubImageUrl,
+                fallback: getStockImage(projectName, projectDescription, stockImageMap)
+            };
+        }
+        
+        function getStockImage(projectName, projectDescription, stockImageMap) {
+            // Check specific project mapping first
+            var projectKey = projectName.toLowerCase().replace(/[-_]/g, '');
+            if (stockImageMap[projectKey]) {
+                return stockImageMap[projectKey];
+            }
+            
+            // Determine image based on description keywords
+            var desc = (projectDescription || '').toLowerCase();
+            if (desc.includes('ai') || desc.includes('llm') || desc.includes('claude') || desc.includes('openai')) {
+                return stockImageMap['default_ai'];
+            } else if (desc.includes('iot') || desc.includes('raspberry') || desc.includes('sensor')) {
+                return stockImageMap['default_iot'];
+            } else if (desc.includes('security') || desc.includes('gate') || desc.includes('facial')) {
+                return stockImageMap['default_security'];
+            } else if (desc.includes('algorithm') || desc.includes('optimization') || desc.includes('data')) {
+                return stockImageMap['default_data'];
+            } else if (desc.includes('code') || desc.includes('api') || desc.includes('transfer')) {
+                return stockImageMap['default_code'];
+            }
+            
+            // Default technology image
+            return stockImageMap['default_tech'];
+        }
+
+        function getProjectImage(projectName, projectDescription) {
+            // Map project types to relevant Unsplash image searches
+            var imageMap = {
+                // AI/ML projects
+                'codingapi': 'https://images.unsplash.com/photo-1555949963-aa79dcee981c?w=400&h=300&fit=crop', // AI code
+                'dco-dp-mcts': 'https://images.unsplash.com/photo-1509228468518-180dd4864904?w=400&h=300&fit=crop', // Algorithm visualization
+                'mcts-demo': 'https://images.unsplash.com/photo-1559028012-481c04fa702d?w=400&h=300&fit=crop', // Data optimization
+                
+                // IoT/Security projects
+                'gateproject': 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=300&fit=crop', // Smart security
+                'gatecheck': 'https://images.unsplash.com/photo-1558002038-1055907df827?w=400&h=300&fit=crop', // IoT monitoring
+                
+                // File transfer
+                'rptransfer': 'https://images.unsplash.com/photo-1544197150-b99a580bb7a8?w=400&h=300&fit=crop', // Network transfer
+                
+                // Default fallbacks by keywords
+                'default_ai': 'https://images.unsplash.com/photo-1677442136019-21780ecad995?w=400&h=300&fit=crop',
+                'default_iot': 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=400&h=300&fit=crop',
+                'default_security': 'https://images.unsplash.com/photo-1563986768609-322da13575f3?w=400&h=300&fit=crop',
+                'default_code': 'https://images.unsplash.com/photo-1542831371-29b0f74f9713?w=400&h=300&fit=crop',
+                'default_data': 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&h=300&fit=crop',
+                'default_tech': 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=400&h=300&fit=crop'
+            };
+            
+            // Check specific project mapping first
+            var projectKey = projectName.toLowerCase().replace(/[-_]/g, '');
+            if (imageMap[projectKey]) {
+                return imageMap[projectKey];
+            }
+            
+            // Determine image based on description keywords
+            var desc = (projectDescription || '').toLowerCase();
+            if (desc.includes('ai') || desc.includes('llm') || desc.includes('claude') || desc.includes('openai')) {
+                return imageMap['default_ai'];
+            } else if (desc.includes('iot') || desc.includes('raspberry') || desc.includes('sensor')) {
+                return imageMap['default_iot'];
+            } else if (desc.includes('security') || desc.includes('gate') || desc.includes('facial')) {
+                return imageMap['default_security'];
+            } else if (desc.includes('algorithm') || desc.includes('optimization') || desc.includes('data')) {
+                return imageMap['default_data'];
+            } else if (desc.includes('code') || desc.includes('api') || desc.includes('transfer')) {
+                return imageMap['default_code'];
+            }
+            
+            // Default technology image
+            return imageMap['default_tech'];
+        }
+
         function renderProjects() {
             var grid = document.getElementById('projects-grid');
             var noProjects = document.getElementById('no-projects');
@@ -565,7 +681,16 @@
                     homepageLink = '<a href="' + project.homepage + '" target="_blank" rel="noopener noreferrer" class="p-2 rounded-lg bg-white/10 hover:bg-white/20 transition-colors duration-200" onclick="event.stopPropagation()"><span class="text-white text-sm">🔗</span></a>';
                 }
                 
-                htmlContent += '<div class="group relative bg-white/10 backdrop-blur-lg rounded-2xl p-6 border border-white/20 hover:border-white/40 transition-all duration-300 hover:transform hover:scale-105 cursor-pointer" onclick="showProjectDetail(' + project.id + ')">';
+                htmlContent += '<div class="group relative bg-white/10 backdrop-blur-lg rounded-2xl overflow-hidden border border-white/20 hover:border-white/40 transition-all duration-300 hover:transform hover:scale-105 cursor-pointer" onclick="showProjectDetail(' + project.id + ')">';
+                
+                // Add project image
+                var projectImages = getProjectImage(project.name, project.description);
+                htmlContent += '<div class="relative h-48 overflow-hidden">';
+                htmlContent += '<img src="' + projectImages.primary + '" alt="' + project.name + '" class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110" onerror="this.onerror=null; this.src=\'' + projectImages.fallback + '\';">';
+                htmlContent += '<div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>';
+                htmlContent += '</div>';
+                
+                htmlContent += '<div class="p-6">';
                 htmlContent += '<div class="absolute inset-0 bg-gradient-to-br from-purple-500/20 to-pink-500/20 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>';
                 htmlContent += '<div class="relative z-10">';
                 htmlContent += '<div class="flex items-start justify-between mb-4">';
@@ -581,7 +706,7 @@
                 htmlContent += '<div class="flex space-x-2">';
                 htmlContent += '<a href="' + project.html_url + '" target="_blank" rel="noopener noreferrer" class="p-2 rounded-lg bg-white/10 hover:bg-white/20 transition-colors duration-200" onclick="event.stopPropagation()"><span class="text-white text-sm">💾</span></a>';
                 htmlContent += homepageLink;
-                htmlContent += '</div></div></div></div>';
+                htmlContent += '</div></div></div></div></div>';
             }
             
             grid.innerHTML = htmlContent;
@@ -662,6 +787,7 @@
             var container = document.getElementById('project-detail-content');
             var techColor = getTechColor(selectedProject.language);
             var updateDate = new Date(selectedProject.updated_at).toLocaleDateString();
+            var projectImages = getProjectImage(selectedProject.name, selectedProject.description);
             
             var homepageButton = '';
             if (selectedProject.homepage) {
@@ -678,12 +804,21 @@
             }
             
             var htmlContent = '';
-            htmlContent += '<div class="flex items-start justify-between mb-6">';
-            htmlContent += '<div>';
+            
+            // Add hero image
+            htmlContent += '<div class="relative h-64 -m-8 mb-8 overflow-hidden rounded-t-3xl">';
+            htmlContent += '<img src="' + projectImages.primary + '" alt="' + selectedProject.name + '" class="w-full h-full object-cover" onerror="this.onerror=null; this.src=\'' + projectImages.fallback + '\';">';
+            htmlContent += '<div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent"></div>';
+            htmlContent += '<div class="absolute bottom-0 left-0 right-0 p-8">';
             htmlContent += '<h1 class="text-4xl font-bold text-white mb-2">' + selectedProject.name + '</h1>';
             htmlContent += '<div class="inline-block px-4 py-2 rounded-full text-sm font-semibold bg-gradient-to-r ' + techColor + ' text-white">' + (selectedProject.language || 'Unknown') + '</div>';
+            htmlContent += '</div></div>';
+            
+            htmlContent += '<div class="flex items-start justify-between mb-6">';
+            htmlContent += '<div class="flex-1">';
+            htmlContent += '<p class="text-white/80 text-lg mb-4">' + (selectedProject.description || 'No description available for this project.') + '</p>';
             htmlContent += '</div>';
-            htmlContent += '<div class="flex space-x-4">';
+            htmlContent += '<div class="flex space-x-4 ml-8">';
             htmlContent += '<a href="' + selectedProject.html_url + '" target="_blank" rel="noopener noreferrer" class="flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-lg hover:from-purple-600 hover:to-pink-600 transition-all duration-200"><span>💾</span><span>View Code</span></a>';
             htmlContent += homepageButton;
             htmlContent += '</div></div>';
@@ -694,11 +829,7 @@
             htmlContent += '<div class="bg-white/5 rounded-xl p-4"><div class="flex items-center space-x-2 mb-2"><span class="text-purple-400 text-xl">📅</span><span class="text-white font-semibold">Updated</span></div><p class="text-sm text-white">' + updateDate + '</p></div>';
             htmlContent += '</div>';
             
-            htmlContent += '<div class="prose prose-invert max-w-none">';
-            htmlContent += '<h2 class="text-2xl font-bold text-white mb-4">Description</h2>';
-            htmlContent += '<p class="text-white/80 text-lg leading-relaxed">' + (selectedProject.description || 'No description available for this project.') + '</p>';
             htmlContent += topicsSection;
-            htmlContent += '</div>';
             
             container.innerHTML = htmlContent;
             safeCreateIcons();
