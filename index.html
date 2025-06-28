@@ -6,6 +6,36 @@
     <title>Lev's Repositories</title>
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- EmailJS SDK -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <script type="text/javascript">
+        (function(){
+            // Initialize EmailJS with your public key
+            // Replace 'YOUR_PUBLIC_KEY' with your actual EmailJS public key
+            emailjs.init("b4pmhFtwQXkpugaEi");
+        })();
+    </script>
+    <!-- 
+    EmailJS Setup Instructions:
+    1. Go to https://www.emailjs.com/ and create a free account
+    2. Add your email service (Gmail, Outlook, etc.) in the Email Services section
+    3. Create an email template with these variables:
+       - {{from_name}} - Sender's name
+       - {{from_email}} - Sender's email
+       - {{message}} - Message content
+    4. Get your credentials:
+       - Public Key: Found in Account → General
+       - Service ID: Found in Email Services
+       - Template ID: Found in Email Templates
+    5. Replace the placeholders above with your actual values:
+       - YOUR_PUBLIC_KEY → Your EmailJS public key
+       - YOUR_SERVICE_ID → Your email service ID
+       - YOUR_TEMPLATE_ID → Your email template ID
+    
+    Alternative: Use Formspree (even simpler):
+    Replace the entire handleContactSubmit function with a simple form action:
+    <form action="https://formspree.io/f/YOUR_FORM_ID" method="POST">
+    -->
     <style>
         .line-clamp-3 {
             display: -webkit-box;
@@ -835,36 +865,77 @@
                 return;
             }
             
-            // Encode the message properly for mailto
-            var subject = encodeURIComponent('Portfolio Contact from ' + name);
-            var body = encodeURIComponent(
-                'Name: ' + name + '\n' +
-                'Email: ' + email + '\n' +
-                'Message:\n' + message + '\n\n' +
-                '---\n' +
-                'Sent from Lev\'s Portfolio Website'
-            );
+            // Show loading state
+            showNotification('Sending your message...', 'info');
             
-            // Create and trigger the mailto link
-            var mailtoLink = 'mailto:levrlg@gmail.com?subject=' + subject + '&body=' + body;
-            
-            // For better UX, show a message first
-            showNotification('Opening your email client...', 'success');
-            
-            // Small delay to show the notification
-            setTimeout(function() {
-                window.location.href = mailtoLink;
+            // EmailJS implementation
+            if (typeof emailjs !== 'undefined') {
+                // Send email using EmailJS
+                var templateParams = {
+                    from_name: name,
+                    from_email: email,
+                    message: message,
+                    to_email: 'levrlg@gmail.com'
+                };
                 
-                // Clear the form after sending
-                document.getElementById('contact-name').value = '';
-                document.getElementById('contact-email').value = '';
-                document.getElementById('contact-message').value = '';
+                // Replace 'YOUR_SERVICE_ID' and 'YOUR_TEMPLATE_ID' with your actual IDs
+                emailjs.send('service_pfo5uoh', 'template_x757oms', templateParams)
+                    .then(function(response) {
+                        console.log('Email sent successfully:', response);
+                        showNotification('Message sent successfully! I\'ll get back to you soon.', 'success');
+                        
+                        // Clear the form
+                        document.getElementById('contact-name').value = '';
+                        document.getElementById('contact-email').value = '';
+                        document.getElementById('contact-message').value = '';
+                    }, function(error) {
+                        console.error('Failed to send email:', error);
+                        showNotification('Failed to send message. Please try again or use the mailto fallback.', 'error');
+                        
+                        // Fallback to mailto
+                        setTimeout(function() {
+                            var subject = encodeURIComponent('Portfolio Contact from ' + name);
+                            var body = encodeURIComponent(
+                                'Name: ' + name + '\n' +
+                                'Email: ' + email + '\n' +
+                                'Message:\n' + message + '\n\n' +
+                                '---\n' +
+                                'Sent from Lev\'s Portfolio Website'
+                            );
+                            var mailtoLink = 'mailto:levrlg@gmail.com?subject=' + subject + '&body=' + body;
+                            window.location.href = mailtoLink;
+                        }, 2000);
+                    });
+            } else {
+                // EmailJS not configured - use mailto fallback
+                console.log('EmailJS not configured, using mailto fallback');
                 
-                // Show final message
+                var subject = encodeURIComponent('Portfolio Contact from ' + name);
+                var body = encodeURIComponent(
+                    'Name: ' + name + '\n' +
+                    'Email: ' + email + '\n' +
+                    'Message:\n' + message + '\n\n' +
+                    '---\n' +
+                    'Sent from Lev\'s Portfolio Website'
+                );
+                
+                var mailtoLink = 'mailto:levrlg@gmail.com?subject=' + subject + '&body=' + body;
+                
+                showNotification('Opening your email client...', 'success');
+                
                 setTimeout(function() {
-                    showNotification('Email client opened! Please send the email from your mail app.', 'info');
-                }, 500);
-            }, 300);
+                    window.location.href = mailtoLink;
+                    
+                    // Clear the form
+                    document.getElementById('contact-name').value = '';
+                    document.getElementById('contact-email').value = '';
+                    document.getElementById('contact-message').value = '';
+                    
+                    setTimeout(function() {
+                        showNotification('Email client opened! Please send the email from your mail app.', 'info');
+                    }, 500);
+                }, 300);
+            }
         }
 
         // Add this notification function for better user feedback
