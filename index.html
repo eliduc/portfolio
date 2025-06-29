@@ -4,6 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lev's Repositories</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="LR.png">
+    <link rel="apple-touch-icon" href="LR.png">
+    
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- EmailJS SDK -->
@@ -11,8 +16,16 @@
     <script type="text/javascript">
         (function(){
             // Initialize EmailJS with your public key
-            // Replace 'YOUR_PUBLIC_KEY' with your actual EmailJS public key
-            emailjs.init("b4pmhFtwQXkpugaEi");
+            try {
+                if (typeof emailjs !== 'undefined') {
+                    emailjs.init("b4pmhFtwQXkpugaEi");
+                    console.log('✅ EmailJS initialized successfully');
+                } else {
+                    console.warn('⚠️ EmailJS library not loaded');
+                }
+            } catch (error) {
+                console.error('❌ EmailJS initialization error:', error);
+            }
         })();
     </script>
     <!-- 
@@ -80,17 +93,37 @@
         .duration-300 {
             transition-duration: 300ms;
         }
+        
+        /* Mobile menu styles */
+        .mobile-menu {
+            transform: translateX(100%);
+            transition: transform 0.3s ease;
+        }
+        
+        .mobile-menu.active {
+            transform: translateX(0);
+        }
+        
+        /* Improve touch targets for mobile */
+        @media (max-width: 768px) {
+            button, a {
+                min-height: 44px;
+                min-width: 44px;
+            }
+        }
     </style>
 </head>
 <body class="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
     <!-- Navigation -->
     <nav class="sticky top-0 z-50 bg-black/20 backdrop-blur-lg border-b border-white/10">
-        <div class="max-w-7xl mx-auto px-6 py-4">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 py-4">
             <div class="flex items-center justify-between">
-                <button onclick="showView('home')" class="text-2xl font-bold text-white hover:text-transparent hover:bg-gradient-to-r hover:from-purple-400 hover:to-pink-400 hover:bg-clip-text transition-all duration-300">
+                <button onclick="showView('home')" class="text-xl sm:text-2xl font-bold text-white hover:text-transparent hover:bg-gradient-to-r hover:from-purple-400 hover:to-pink-400 hover:bg-clip-text transition-all duration-300">
                     Lev's Repositories
                 </button>
-                <div class="flex space-x-6">
+                
+                <!-- Desktop Navigation -->
+                <div class="hidden sm:flex space-x-6">
                     <button onclick="showView('home')" id="nav-projects" class="px-4 py-2 rounded-lg transition-all duration-200 bg-purple-500 text-white">
                         Projects
                     </button>
@@ -98,11 +131,40 @@
                         Contact
                     </button>
                 </div>
+                
+                <!-- Mobile Menu Button -->
+                <button onclick="toggleMobileMenu()" class="sm:hidden p-2 text-white">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="3" y1="12" x2="21" y2="12"></line>
+                        <line x1="3" y1="6" x2="21" y2="6"></line>
+                        <line x1="3" y1="18" x2="21" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="mobile-menu fixed top-0 right-0 h-full w-64 bg-black/95 backdrop-blur-lg border-l border-white/10 sm:hidden">
+            <div class="p-6">
+                <button onclick="toggleMobileMenu()" class="mb-8 text-white">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+                <div class="space-y-4">
+                    <button onclick="showView('home'); toggleMobileMenu()" class="block w-full text-left px-4 py-3 rounded-lg bg-purple-500 text-white">
+                        Projects
+                    </button>
+                    <button onclick="showView('contact'); toggleMobileMenu()" class="block w-full text-left px-4 py-3 rounded-lg text-white/80 hover:text-white hover:bg-white/10">
+                        Contact
+                    </button>
+                </div>
             </div>
         </div>
     </nav>
 
-    <div class="max-w-7xl mx-auto px-6 py-12">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
         <!-- Loading Screen -->
         <div id="loading-screen" class="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center">
             <div class="text-center">
@@ -114,16 +176,16 @@
         <!-- Home View -->
         <div id="home-view" class="hidden">
             <!-- Hero Section -->
-            <div class="text-center mb-16">
-                <h1 class="text-6xl font-bold text-white mb-6">
+            <div class="text-center mb-12 sm:mb-16">
+                <h1 class="text-4xl sm:text-6xl font-bold text-white mb-4 sm:mb-6">
                     <span class="text-transparent bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text">
                         Lev's Repositories
                     </span>
                 </h1>
-                <p class="text-xl text-white/80 mb-8 max-w-2xl mx-auto">
+                <p class="text-lg sm:text-xl text-white/80 mb-6 sm:mb-8 max-w-2xl mx-auto px-4">
                     AI & IoT Developer specializing in intelligent automation, algorithmic optimization, and smart system solutions
                 </p>
-                <div class="flex items-center justify-center space-x-4">
+                <div class="flex flex-wrap items-center justify-center gap-2 sm:gap-4">
                     <span class="px-4 py-2 bg-gradient-to-r from-cyan-500 to-blue-500 text-white rounded-full text-sm font-semibold">
                         <span id="project-count">Loading...</span>
                     </span>
@@ -140,9 +202,9 @@
             </div>
 
             <!-- Search and Filter -->
-            <div class="mb-12">
-                <div class="flex flex-col md:flex-row gap-4 items-center justify-between">
-                    <div class="relative flex-1 max-w-md">
+            <div class="mb-8 sm:mb-12">
+                <div class="flex flex-col gap-4">
+                    <div class="relative">
                         <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-white/50 text-sm">🔍</span>
                         <input
                             type="text"
@@ -160,7 +222,7 @@
             </div>
 
             <!-- Projects Grid -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" id="projects-grid">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-8" id="projects-grid">
                 <!-- Projects will be populated by JavaScript -->
             </div>
 
@@ -175,12 +237,12 @@
         <!-- Project Detail View -->
         <div id="project-view" class="hidden">
             <div class="max-w-4xl mx-auto">
-                <button onclick="showView('home')" class="flex items-center space-x-2 text-white/80 hover:text-white mb-8 transition-colors duration-200">
+                <button onclick="showView('home')" class="flex items-center space-x-2 text-white/80 hover:text-white mb-6 sm:mb-8 transition-colors duration-200">
                     <span class="text-lg">←</span>
                     <span>Back to Projects</span>
                 </button>
                 
-                <div id="project-detail-content" class="bg-white/10 backdrop-blur-lg rounded-3xl p-8 border border-white/20">
+                <div id="project-detail-content" class="bg-white/10 backdrop-blur-lg rounded-3xl p-6 sm:p-8 border border-white/20">
                     <!-- Project details will be populated by JavaScript -->
                 </div>
             </div>
@@ -189,13 +251,13 @@
         <!-- Contact View -->
         <div id="contact-view" class="hidden">
             <div class="max-w-2xl mx-auto">
-                <div class="text-center mb-12">
-                    <h2 class="text-4xl font-bold text-white mb-4">Get In Touch</h2>
-                    <p class="text-white/80 text-lg">Let's discuss your next project or collaboration</p>
+                <div class="text-center mb-8 sm:mb-12">
+                    <h2 class="text-3xl sm:text-4xl font-bold text-white mb-4">Get In Touch</h2>
+                    <p class="text-white/80 text-base sm:text-lg">Let's discuss your next project or collaboration</p>
                 </div>
                 
-                <div class="bg-white/10 backdrop-blur-lg rounded-3xl p-8 border border-white/20">
-                    <div class="space-y-6">
+                <div class="bg-white/10 backdrop-blur-lg rounded-3xl p-6 sm:p-8 border border-white/20">
+                    <div class="space-y-4 sm:space-y-6">
                         <div>
                             <label class="block text-white font-semibold mb-2">Name</label>
                             <input
@@ -219,13 +281,13 @@
                             <textarea
                                 rows="5"
                                 id="contact-message"
-                                class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/50 focus:outline-none focus:border-purple-500 transition-colors duration-200"
+                                class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/50 focus:outline-none focus:border-purple-500 transition-colors duration-200 resize-none"
                                 placeholder="Tell me about your project..."
                             ></textarea>
                         </div>
                         <button
                             onclick="handleContactSubmit()"
-                            class="w-full px-6 py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-semibold rounded-lg hover:from-purple-600 hover:to-pink-600 transition-all duration-200 transform hover:scale-105"
+                            class="w-full px-6 py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-semibold rounded-lg hover:from-purple-600 hover:to-pink-600 transition-all duration-200 transform hover:scale-105 min-h-[44px]"
                         >
                             Send Message
                         </button>
@@ -237,19 +299,19 @@
 
     <!-- Footer -->
     <footer class="border-t border-white/10 bg-black/20">
-        <div class="max-w-7xl mx-auto px-6 py-8">
-            <div class="flex flex-col md:flex-row items-center justify-between gap-4">
-                <p class="text-white/60 text-center md:text-left">© 2025 Lev. Built with HTML, CSS & JavaScript • <span id="last-updated">Loading...</span></p>
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
+            <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+                <p class="text-white/60 text-sm sm:text-base text-center sm:text-left">© 2025 Lev. Built with HTML, CSS & JavaScript • <span id="last-updated" class="block sm:inline">Loading...</span></p>
                 <div class="flex items-center space-x-4">
                     <div class="text-white/50 text-xs text-center">
-                        💡 <span class="hidden md:inline">Deploy to a web server for live GitHub data</span>
-                        <span class="md:hidden">Deploy for live data</span>
+                        💡 <span class="hidden sm:inline">Deploy to a web server for live GitHub data</span>
+                        <span class="sm:hidden">Deploy for live data</span>
                     </div>
                     <a
                         href="https://github.com/eliduc"
                         target="_blank"
                         rel="noopener noreferrer"
-                        class="text-white/60 hover:text-white transition-colors duration-200 text-xl"
+                        class="text-white/60 hover:text-white transition-colors duration-200 text-xl p-2"
                         title="View GitHub Profile"
                     >
                         💾
@@ -268,6 +330,11 @@
         var activeFilter = 'all';
         var searchTerm = '';
         var selectedProject = null;
+
+        function toggleMobileMenu() {
+            var menu = document.getElementById('mobile-menu');
+            menu.classList.toggle('active');
+        }
 
         function fetchGitHubRepositories() {
             // Show loading state
@@ -677,7 +744,7 @@
                     htmlContent += '</div>';
                 }
                 
-                htmlContent += '<div class="p-6">';
+                htmlContent += '<div class="p-4 sm:p-6">';
                 htmlContent += '<div class="absolute inset-0 bg-gradient-to-br from-purple-500/20 to-pink-500/20 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>';
                 htmlContent += '<div class="relative z-10">';
                 htmlContent += '<div class="flex items-start justify-between mb-4">';
@@ -686,7 +753,7 @@
                 htmlContent += '<span class="text-sm">⭐</span><span>' + project.stargazers_count + '</span>';
                 htmlContent += '<span class="text-sm">🍴</span><span>' + project.forks_count + '</span>';
                 htmlContent += '</div></div>';
-                htmlContent += '<h3 class="text-xl font-bold text-white mb-2 group-hover:text-transparent group-hover:bg-gradient-to-r group-hover:from-purple-400 group-hover:to-pink-400 group-hover:bg-clip-text transition-all duration-300">' + project.name + '</h3>';
+                htmlContent += '<h3 class="text-lg sm:text-xl font-bold text-white mb-2 group-hover:text-transparent group-hover:bg-gradient-to-r group-hover:from-purple-400 group-hover:to-pink-400 group-hover:bg-clip-text transition-all duration-300">' + project.name + '</h3>';
                 htmlContent += '<p class="text-white/80 text-sm mb-4 line-clamp-3">' + (project.description || 'No description available') + '</p>';
                 htmlContent += '<div class="flex items-center justify-between">';
                 htmlContent += '<span class="text-white/60 text-xs">Updated ' + updateDate + '</span>';
@@ -706,7 +773,7 @@
             
             var allActive = activeFilter === 'all';
             var allClass = allActive ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white' : 'bg-white/10 text-white/80 hover:bg-white/20';
-            htmlContent += '<button onclick="filterProjects(\'all\')" class="px-4 py-2 rounded-lg transition-all duration-200 ' + allClass + '">All</button>';
+            htmlContent += '<button onclick="filterProjects(\'all\')" class="px-3 sm:px-4 py-2 rounded-lg transition-all duration-200 text-sm sm:text-base ' + allClass + '">All</button>';
             
             for (var i = 0; i < technologies.length; i++) {
                 var tech = technologies[i];
@@ -720,7 +787,7 @@
                     buttonClass = 'bg-white/10 text-white/80 hover:bg-white/20';
                 }
                 
-                htmlContent += '<button onclick="filterProjects(\'' + tech + '\')" class="px-4 py-2 rounded-lg transition-all duration-200 ' + buttonClass + '">' + tech + '</button>';
+                htmlContent += '<button onclick="filterProjects(\'' + tech + '\')" class="px-3 sm:px-4 py-2 rounded-lg transition-all duration-200 text-sm sm:text-base ' + buttonClass + '">' + tech + '</button>';
             }
             
             container.innerHTML = htmlContent;
@@ -778,14 +845,14 @@
             
             var homepageButton = '';
             if (selectedProject.homepage) {
-                homepageButton = '<a href="' + selectedProject.homepage + '" target="_blank" rel="noopener noreferrer" class="flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-cyan-500 to-blue-500 text-white rounded-lg hover:from-cyan-600 hover:to-blue-600 transition-all duration-200"><span>🔗</span><span>Live Demo</span></a>';
+                homepageButton = '<a href="' + selectedProject.homepage + '" target="_blank" rel="noopener noreferrer" class="flex items-center justify-center sm:justify-start space-x-2 px-4 py-2 bg-gradient-to-r from-cyan-500 to-blue-500 text-white rounded-lg hover:from-cyan-600 hover:to-blue-600 transition-all duration-200 text-sm sm:text-base"><span>🔗</span><span>Live Demo</span></a>';
             }
             
             var topicsSection = '';
             if (selectedProject.topics && selectedProject.topics.length > 0) {
-                topicsSection = '<div class="mt-6"><h3 class="text-xl font-bold text-white mb-3">Topics</h3><div class="flex flex-wrap gap-2">';
+                topicsSection = '<div class="mt-6"><h3 class="text-lg sm:text-xl font-bold text-white mb-3">Topics</h3><div class="flex flex-wrap gap-2">';
                 for (var i = 0; i < selectedProject.topics.length; i++) {
-                    topicsSection += '<span class="px-3 py-1 bg-gradient-to-r from-indigo-500 to-purple-500 text-white text-sm rounded-full">' + selectedProject.topics[i] + '</span>';
+                    topicsSection += '<span class="px-3 py-1 bg-gradient-to-r from-indigo-500 to-purple-500 text-white text-xs sm:text-sm rounded-full">' + selectedProject.topics[i] + '</span>';
                 }
                 topicsSection += '</div></div>';
             }
@@ -793,26 +860,26 @@
             var htmlContent = '';
             
             // Add hero image with lighter gradient
-            htmlContent += '<div class="relative h-64 -m-8 mb-8 overflow-hidden rounded-t-3xl">';
+            htmlContent += '<div class="relative h-48 sm:h-64 -m-6 sm:-m-8 mb-6 sm:mb-8 overflow-hidden rounded-t-3xl">';
             htmlContent += '<img src="' + projectImages.primary + '" alt="' + selectedProject.name + '" class="w-full h-full object-cover" loading="lazy" crossorigin="anonymous" onerror="this.onerror=null; this.src=\'' + projectImages.fallback + '\';">';
             htmlContent += '<div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"></div>';
-            htmlContent += '<div class="absolute bottom-0 left-0 right-0 p-8">';
-            htmlContent += '<h1 class="text-4xl font-bold text-white mb-2">' + selectedProject.name + '</h1>';
-            htmlContent += '<div class="inline-block px-4 py-2 rounded-full text-sm font-semibold bg-gradient-to-r ' + techColor + ' text-white">' + (selectedProject.language || 'Unknown') + '</div>';
+            htmlContent += '<div class="absolute bottom-0 left-0 right-0 p-6 sm:p-8">';
+            htmlContent += '<h1 class="text-2xl sm:text-4xl font-bold text-white mb-2">' + selectedProject.name + '</h1>';
+            htmlContent += '<div class="inline-block px-3 sm:px-4 py-1 sm:py-2 rounded-full text-xs sm:text-sm font-semibold bg-gradient-to-r ' + techColor + ' text-white">' + (selectedProject.language || 'Unknown') + '</div>';
             htmlContent += '</div></div>';
             
-            htmlContent += '<div class="flex items-start justify-between mb-6">';
+            htmlContent += '<div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-6">';
             htmlContent += '<div class="flex-1">';
-            htmlContent += '<p class="text-white/80 text-lg mb-4">' + (selectedProject.description || 'No description available for this project.') + '</p>';
+            htmlContent += '<p class="text-white/80 text-base sm:text-lg">' + (selectedProject.description || 'No description available for this project.') + '</p>';
             htmlContent += '</div>';
-            htmlContent += '<div class="flex space-x-4 ml-8">';
-            htmlContent += '<a href="' + selectedProject.html_url + '" target="_blank" rel="noopener noreferrer" class="flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-lg hover:from-purple-600 hover:to-pink-600 transition-all duration-200"><span>💾</span><span>View Code</span></a>';
+            htmlContent += '<div class="flex flex-col sm:flex-row gap-2 sm:gap-4">';
+            htmlContent += '<a href="' + selectedProject.html_url + '" target="_blank" rel="noopener noreferrer" class="flex items-center justify-center sm:justify-start space-x-2 px-4 py-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-lg hover:from-purple-600 hover:to-pink-600 transition-all duration-200 text-sm sm:text-base"><span>💾</span><span>View Code</span></a>';
             htmlContent += homepageButton;
             htmlContent += '</div></div>';
             
-            htmlContent += '<div class="grid md:grid-cols-3 gap-8 mb-8">';
-            htmlContent += '<div class="bg-white/5 rounded-xl p-4"><div class="flex items-center space-x-2 mb-2"><span class="text-yellow-400 text-xl">⭐</span><span class="text-white font-semibold">Stars</span></div><p class="text-2xl font-bold text-white">' + selectedProject.stargazers_count + '</p></div>';
-            htmlContent += '<div class="bg-white/5 rounded-xl p-4"><div class="flex items-center space-x-2 mb-2"><span class="text-cyan-400 text-xl">🍴</span><span class="text-white font-semibold">Forks</span></div><p class="text-2xl font-bold text-white">' + selectedProject.forks_count + '</p></div>';
+            htmlContent += '<div class="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-8 mb-6 sm:mb-8">';
+            htmlContent += '<div class="bg-white/5 rounded-xl p-4"><div class="flex items-center space-x-2 mb-2"><span class="text-yellow-400 text-xl">⭐</span><span class="text-white font-semibold">Stars</span></div><p class="text-xl sm:text-2xl font-bold text-white">' + selectedProject.stargazers_count + '</p></div>';
+            htmlContent += '<div class="bg-white/5 rounded-xl p-4"><div class="flex items-center space-x-2 mb-2"><span class="text-cyan-400 text-xl">🍴</span><span class="text-white font-semibold">Forks</span></div><p class="text-xl sm:text-2xl font-bold text-white">' + selectedProject.forks_count + '</p></div>';
             htmlContent += '<div class="bg-white/5 rounded-xl p-4"><div class="flex items-center space-x-2 mb-2"><span class="text-purple-400 text-xl">📅</span><span class="text-white font-semibold">Updated</span></div><p class="text-sm text-white">' + updateDate + '</p></div>';
             htmlContent += '</div>';
             
@@ -845,6 +912,9 @@
             }
             
             currentView = view;
+            
+            // Scroll to top on view change
+            window.scrollTo(0, 0);
         }
 
         function handleContactSubmit() {
@@ -949,7 +1019,7 @@
             // Create notification element
             var notification = document.createElement('div');
             notification.id = 'notification';
-            notification.className = 'fixed top-4 right-4 z-50 px-6 py-3 rounded-lg text-white font-medium transition-all duration-300 transform translate-x-full';
+            notification.className = 'fixed top-20 sm:top-4 right-4 left-4 sm:left-auto sm:max-w-sm z-50 px-6 py-3 rounded-lg text-white font-medium transition-all duration-300 transform translate-x-full';
             
             // Set color based on type
             if (type === 'success') {
